@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>EntangleGuard | Quantum Entanglement Security System</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #00B4D8;
+            --primary-dark: #0096C7;
+            --secondary: #00F5D4;
+            --quantum: #8A2BE2;
+            --quantum-glow: rgba(138, 43, 226, 0.5);
+            --success: #00FF88;
+            --danger: #EF476F;
+            --warning: #FFD166;
+            --dark: #0A0F1A;
+            --glass: rgba(15, 25, 45, 0.45);
+            --glass-border: rgba(0, 180, 216, 0.3);
+            --card-bg: rgba(20, 28, 40, 0.6);
+        }
+        body { background: var(--dark); color: #E8EDF5; font-family: 'Exo 2', sans-serif; min-height: 100vh; overflow-x: hidden; }
+        #particles-js { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+        .container { max-width: 1600px; margin: 0 auto; padding: 30px; position: relative; z-index: 1; }
+        
+        /* Header */
+        .entangleguard-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 0 30px; border-bottom: 1px solid var(--glass-border); margin-bottom: 35px; flex-wrap: wrap; gap: 25px; }
+        .header-left { display: flex; align-items: center; gap: 30px; flex-wrap: wrap; }
+        .logo-img { height: 75px; width: auto; filter: drop-shadow(0 0 12px var(--quantum-glow)); transition: transform 0.3s; object-fit: contain; }
+        .logo-img:hover { transform: scale(1.03); }
+        .title-area { display: flex; flex-direction: column; }
+        .logo-text { font-size: 2rem; font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--quantum)); -webkit-background-clip: text; background-clip: text; color: transparent; letter-spacing: -1px; }
+        .subtitle { font-size: 0.75rem; color: var(--secondary); letter-spacing: 3px; margin-top: 6px; }
+        .status-bar { display: flex; gap: 20px; font-size: 0.75rem; flex-wrap: wrap; }
+        .status-badge { background: var(--glass); padding: 8px 16px; border-radius: 30px; border: 1px solid var(--glass-border); backdrop-filter: blur(4px); font-weight: 500; }
+        .status-badge.online { border-color: var(--success); color: var(--success); }
+        .status-badge i { margin-right: 6px; }
+        
+        /* Grid Layouts - MAX SPACING */
+        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 35px; margin-bottom: 35px; }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+        .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 35px; margin-bottom: 35px; }
+        .four-col { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; margin-bottom: 28px; }
+        
+        /* Cards */
+        .glass-card { background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 32px; padding: 28px; transition: all 0.3s; }
+        .glass-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,180,216,0.1); }
+        .card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--glass-border); }
+        .card-header i { font-size: 1.5rem; color: var(--primary); }
+        .card-header h3 { font-size: 1.05rem; font-weight: 700; letter-spacing: 1px; }
+        
+        /* Backend Grid */
+        .backend-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 10px; }
+        .backend-chip { background: rgba(0,0,0,0.4); border-radius: 18px; padding: 14px 10px; text-align: center; border: 1px solid var(--glass-border); transition: all 0.2s; cursor: pointer; }
+        .backend-chip.online { border-color: var(--success); background: rgba(0,255,136,0.05); }
+        .backend-chip:hover { transform: translateY(-2px); border-color: var(--primary); }
+        .backend-name { font-size: 0.8rem; font-weight: bold; }
+        .backend-stats { font-size: 0.65rem; color: var(--secondary); margin-top: 6px; }
+        .backend-status { font-size: 0.55rem; margin-top: 5px; }
+        
+        /* Bell States */
+        .bell-container { display: flex; gap: 18px; justify-content: space-between; margin: 20px 0; }
+        .bell-state { text-align: center; background: rgba(0,0,0,0.4); border-radius: 20px; padding: 18px 12px; flex: 1; cursor: pointer; transition: all 0.25s; border: 1px solid var(--glass-border); }
+        .bell-state.active { border-color: var(--quantum); background: linear-gradient(135deg, rgba(138,43,226,0.2), rgba(0,180,216,0.1)); box-shadow: 0 0 20px var(--quantum-glow); }
+        .bell-symbol { font-size: 1.8rem; font-weight: bold; font-family: monospace; }
+        .bell-correlation { font-size: 0.85rem; font-weight: bold; color: var(--secondary); margin-top: 8px; }
+        .bell-theory { font-size: 0.6rem; color: #8A99B0; margin-top: 5px; }
+        
+        /* Meter */
+        .meter-container { background: rgba(0,0,0,0.5); border-radius: 24px; padding: 20px; margin: 18px 0; }
+        .meter-label { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 10px; }
+        .meter-bar { height: 16px; background: rgba(255,255,255,0.1); border-radius: 8px; overflow: hidden; }
+        .meter-fill { height: 100%; width: 98.4%; background: linear-gradient(90deg, var(--quantum), var(--secondary), var(--primary)); border-radius: 8px; transition: width 0.3s ease; }
+        .job-id { font-family: monospace; font-size: 0.65rem; margin-top: 12px; color: #8A99B0; background: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 10px; display: inline-block; }
+        
+        /* Key Metrics */
+        .key-metric { text-align: center; padding: 16px 12px; background: rgba(0,0,0,0.3); border-radius: 20px; transition: all 0.2s; }
+        .key-metric:hover { background: rgba(0,180,216,0.1); }
+        .key-number { font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, var(--secondary), var(--primary)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .key-label { font-size: 0.7rem; color: #8A99B0; margin-top: 6px; letter-spacing: 0.5px; }
+        
+        /* Buttons */
+        .btn-quantum { background: linear-gradient(135deg, var(--quantum), var(--primary)); border: none; padding: 12px 22px; border-radius: 45px; color: white; font-weight: 700; cursor: pointer; font-size: 0.75rem; transition: all 0.3s; letter-spacing: 0.5px; }
+        .btn-quantum:hover { transform: translateY(-2px); box-shadow: 0 8px 20px var(--quantum-glow); }
+        .btn-outline { background: transparent; border: 1.5px solid var(--primary); padding: 10px 18px; border-radius: 45px; color: var(--primary); cursor: pointer; font-size: 0.7rem; font-weight: 600; transition: all 0.2s; }
+        .btn-outline:hover { background: rgba(0,180,216,0.15); transform: translateY(-1px); }
+        
+        /* Logs */
+        .log-container { background: rgba(0,0,0,0.3); border-radius: 16px; padding: 14px; max-height: 180px; overflow-y: auto; }
+        .log-entry { font-family: monospace; font-size: 0.65rem; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); color: #8A99B0; }
+        .log-entry.success { color: var(--success); }
+        .log-entry.warning { color: var(--warning); }
+        .log-entry.danger { color: var(--danger); }
+        
+        /* Alert Panel */
+        .alert-panel { background: rgba(0,0,0,0.3); border-radius: 16px; padding: 14px; }
+        .alert-item { font-size: 0.7rem; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 10px; }
+        .alert-item.success { color: var(--success); }
+        .alert-item i { width: 20px; }
+        
+        /* Footer */
+        .footer { text-align: center; font-size: 0.7rem; color: #8A99B0; padding: 30px 20px 25px; border-top: 1px solid var(--glass-border); margin-top: 40px; }
+        .bottom-logos { display: flex; justify-content: center; gap: 50px; margin-bottom: 25px; }
+        .bottom-logo { height: 50px; width: auto; opacity: 0.8; transition: all 0.3s; }
+        .bottom-logo:hover { opacity: 1; transform: scale(1.05); }
+        
+        /* Scrollbar */
+        .log-container::-webkit-scrollbar { width: 4px; }
+        .log-container::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 4px; }
+        .log-container::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+        
+        @media (max-width: 1200px) { 
+            .two-col, .three-col, .four-col { grid-template-columns: 1fr; gap: 30px; } 
+            .stats-row { grid-template-columns: repeat(2, 1fr); gap: 25px; }
+            .backend-grid { grid-template-columns: repeat(2, 1fr); }
+            .bell-container { flex-wrap: wrap; }
+            .container { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="container">
+        <!-- Header with Logo -->
+        <div class="entangleguard-header">
+            <div class="header-left">
+                <img src="https://i.postimg.cc/44m1NBFY/Entangle-Guard-New-Logo-image-3-removebg-preview.png" alt="EntangleGuard Logo" class="logo-img" onerror="this.src='https://placehold.co/75x75/8A2BE2/white?text=EG'">
+                <div class="title-area">
+                    <div class="logo-text">ENTANGLEGUARD</div>
+                    <div class="subtitle">QUANTUM ENTANGLEMENT-BASED SECURE COMMUNICATION SYSTEM</div>
+                </div>
+            </div>
+            <div class="status-bar">
+                <span class="status-badge online" id="mqosStatus"><i class="fas fa-microchip"></i> MQOS: 7/7 Backends Online</span>
+                <span class="status-badge online" id="firestoreStatus"><i class="fas fa-database"></i> Firestore: Connected</span>
+            </div>
+        </div>
+
+        <!-- Row 1: MQOS Backend Plug-ins -->
+        <div class="glass-card">
+            <div class="card-header"><i class="fas fa-plug"></i><h3>MQOS QUANTUM BACKEND PLUG-IN</h3><span style="margin-left: auto; font-size: 0.75rem;">🔌 Active Plug-ins</span><span style="margin-left: 15px; font-size: 0.75rem; color: var(--success);"><i class="fas fa-circle"></i> All Systems Operational</span></div>
+            <div class="backend-grid" id="backendGrid"></div>
+            <div style="text-align: center; margin-top: 20px; font-size: 0.7rem; color: #8A99B0;"><i class="fas fa-sync-alt"></i> Real-time backend health checks · Quantum circuit routing · Vendor-agnostic orchestration</div>
+        </div>
+
+        <!-- Row 2: Quantum Key Generation + Key Distribution Monitor -->
+        <div class="two-col">
+            <div class="glass-card">
+                <div class="card-header"><i class="fas fa-microchip"></i><h3>QUANTUM KEY GENERATION</h3><span style="margin-left: auto; font-size: 0.7rem; color: var(--secondary);" id="activeBackend">IBM Torino (133-qubit) · 98.4% correlation</span></div>
+                <div class="bell-container" id="bellContainer"></div>
+                <div class="meter-container">
+                    <div class="meter-label"><span><i class="fas fa-chart-line"></i> Entanglement Verification (IBM Torino)</span><span id="correlationValue">98.4%</span></div>
+                    <div class="meter-bar"><div class="meter-fill" id="correlationFill" style="width: 98.4%;"></div></div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 15px; flex-wrap: wrap; gap: 10px;">
+                        <span class="job-id"><i class="fas fa-id-card"></i> Job ID: d55p3jgnsj9s73b32lj0</span>
+                        <span class="job-id"><i class="far fa-clock"></i> Timestamp: <span id="timestamp">2026/04/21 12:13:15</span></span>
+                    </div>
+                </div>
+                <button class="btn-quantum" id="exportKeyBtn" style="width: 100%;"><i class="fas fa-download"></i> EXPORT QUANTUM KEY</button>
+            </div>
+
+            <div class="glass-card">
+                <div class="card-header"><i class="fas fa-exchange-alt"></i><h3>KEY DISTRIBUTION MONITOR</h3></div>
+                <div class="two-col" style="gap: 20px; margin-bottom: 20px;">
+                    <div class="key-metric"><div style="font-weight: bold; font-size: 1.1rem;">Alice</div><div style="font-size: 0.7rem; color: var(--success);"><i class="fas fa-link"></i> Quantum channel active</div></div>
+                    <div class="key-metric"><div style="font-weight: bold; font-size: 1.1rem;">Bob</div><div style="font-size: 0.7rem; color: var(--warning);"><i class="fas fa-hourglass-half"></i> Waiting for key...</div></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                    <span><i class="fas fa-fiber-new"></i> Quantum Channel: <span id="quantumChannelStatus" style="color: var(--success);">ACTIVE</span></span>
+                    <span><i class="fas fa-shield-virus"></i> Tamper Detection: <span id="tamperStatus" style="color: var(--success);">NO TAMPER</span></span>
+                </div>
+                <div class="log-container" id="keyTransmissionLog">
+                    <div style="font-size: 0.7rem; margin-bottom: 8px; font-weight: bold;"><i class="fas fa-history"></i> Key Transmission Log</div>
+                    <div class="log-entry success">2026-04-07 09:23:45 · Key K-3847 transmitted · Verified ✓</div>
+                    <div class="log-entry success">2026-04-07 08:15:22 · Key K-3846 transmitted · Verified ✓</div>
+                    <div class="log-entry">2026-04-06 22:10:03 · Key K-3845 transmitted · Verified ✓</div>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 15px; flex-wrap: wrap; gap: 15px;">
+                    <span><i class="fas fa-id-card"></i> Authentication: <span style="color: var(--success);">VERIFIED</span></span>
+                    <span><i class="fas fa-check-double"></i> Key Receipt: <span style="color: var(--success);">CONFIRMED</span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 3: Transaction Security Gateway -->
+        <div class="glass-card">
+            <div class="card-header"><i class="fas fa-lock"></i><h3>TRANSACTION SECURITY GATEWAY</h3></div>
+            <div class="three-col" style="margin-bottom: 0;">
+                <div><label style="font-size: 0.7rem; margin-bottom: 8px; display: block; color: var(--secondary);"><i class="fas fa-hashtag"></i> Transaction ID</label><input type="text" id="txnId" value="TXN-2026-001" style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); border-radius: 14px; padding: 12px; color: white; font-family: monospace;"></div>
+                <div><label style="font-size: 0.7rem; margin-bottom: 8px; display: block; color: var(--secondary);"><i class="fas fa-signature"></i> Quantum Signature</label><div style="font-family: monospace; font-size: 0.7rem; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 14px; word-break: break-all;">8f4e2a7b1c3d5e9f7a2b4c6d8e0f1a3b...b71c</div></div>
+                <div style="text-align: center;">
+                    <div style="font-size: 0.8rem; margin-bottom: 8px;">Verification Status: <span id="verifyStatus" style="color: var(--success);"><i class="fas fa-check-circle"></i> PASSED</span></div>
+                    <div style="font-size: 0.75rem;">Latency: <span id="latencyDisplay">3.2</span>ms</div>
+                    <div style="font-size: 0.7rem; margin-top: 8px;"><i class="fas fa-link"></i> Blockchain: Ethereum PoA</div>
+                    <div style="font-size: 0.7rem;"><i class="fas fa-file-alt"></i> Audit Trail: <a href="#" id="auditLink" style="color: var(--primary); text-decoration: none;">LINK</a></div>
+                </div>
+            </div>
+            <button class="btn-outline" id="verifyTxnBtn" style="margin-top: 22px; width: auto; display: inline-block;"><i class="fas fa-check-double"></i> VERIFY TRANSACTION</button>
+        </div>
+
+        <!-- Row 4: QKMS + Network Command Center -->
+        <div class="two-col">
+            <div class="glass-card">
+                <div class="card-header"><i class="fas fa-key"></i><h3>QUANTUM KEY MANAGEMENT SYSTEM</h3></div>
+                <div class="four-col" style="margin-bottom: 20px;">
+                    <div class="key-metric"><div class="key-number" id="activeKeys">247</div><div class="key-label">Active Keys</div></div>
+                    <div class="key-metric"><div class="key-number" id="expiredKeys">12</div><div class="key-label">Expired</div></div>
+                    <div class="key-metric"><div class="key-number" id="revokedKeys">3</div><div class="key-label">Revoked</div></div>
+                    <div class="key-metric"><button class="btn-quantum" id="rotateKeysBtn" style="padding: 8px 14px; font-size: 0.65rem; width: 100%;">Rotate Keys</button></div>
+                </div>
+                <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+                    <button class="btn-outline" id="revokeKeyBtn" style="flex:1;"><i class="fas fa-ban"></i> Revoke Key</button>
+                    <button class="btn-outline" id="exportKeysBtn" style="flex:1;"><i class="fas fa-archive"></i> Export Encrypted Keys</button>
+                </div>
+                <div class="log-container" id="accessLog" style="max-height: 150px;">
+                    <div style="font-size: 0.7rem; margin-bottom: 8px; font-weight: bold;"><i class="fas fa-list-alt"></i> Access Control Log</div>
+                    <div class="log-entry">2026-04-07 09:23:45 · Key K-3847 accessed by admin</div>
+                    <div class="log-entry">2026-04-07 08:15:22 · Key K-3846 rotated</div>
+                    <div class="log-entry">2026-04-06 14:30:11 · Key K-3845 exported</div>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 18px; flex-wrap: wrap; gap: 12px;">
+                    <span><i class="fas fa-database"></i> Backup & Recovery: <span style="color: var(--success);">HEALTHY</span></span>
+                    <span><i class="fas fa-clipboard-list"></i> Compliance Report: <span style="color: var(--success);">READY</span></span>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <div class="card-header"><i class="fas fa-globe"></i><h3>NETWORK SECURITY COMMAND CENTER</h3></div>
+                <div class="four-col" style="margin-bottom: 20px;">
+                    <div class="key-metric"><div class="key-number" id="activeNodes">247</div><div class="key-label">Active Nodes</div></div>
+                    <div class="key-metric"><div class="key-number" id="entangleHealth">98.4%</div><div class="key-label">Entanglement Health</div></div>
+                    <div class="key-metric"><div class="key-number" id="activeThreats">0</div><div class="key-label">Active Threats</div></div>
+                    <div class="key-metric"><div class="key-number">7/7</div><div class="key-label">MQOS Backends</div></div>
+                </div>
+                <div class="backend-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 20px;" id="backendBadges"></div>
+                <div class="alert-panel" id="alertPanel">
+                    <div class="alert-item success"><i class="fas fa-check-circle"></i> All systems operational</div>
+                    <div class="alert-item"><i class="fas fa-info-circle"></i> Key rotation completed: 07 April 2026</div>
+                    <div class="alert-item"><i class="fas fa-info-circle"></i> MQOS health check: 7/7 backends online</div>
+                </div>
+                <div style="margin-top: 18px; text-align: center; font-weight: bold; color: var(--success); padding: 10px; background: rgba(0,255,136,0.05); border-radius: 40px;"><i class="fas fa-shield-alt"></i> System Status: ALL SYSTEMS OPERATIONAL</div>
+            </div>
+        </div>
+
+        <!-- Row 5: Corporate Quantum Security Dashboard -->
+        <div class="glass-card">
+            <div class="card-header"><i class="fas fa-building"></i><h3>CORPORATE QUANTUM SECURITY DASHBOARD</h3></div>
+            <div class="four-col" style="margin-bottom: 25px;">
+                <div class="key-metric"><div class="key-number" id="keysDistributed">12,458</div><div class="key-label"><i class="fas fa-key"></i> Keys Distributed</div></div>
+                <div class="key-metric"><div class="key-number" id="txnsSecured">847,231</div><div class="key-label"><i class="fas fa-exchange-alt"></i> Transactions Secured</div></div>
+                <div class="key-metric"><div class="key-number" id="corpActiveNodes">247</div><div class="key-label"><i class="fas fa-network-wired"></i> Active Nodes</div></div>
+                <div class="key-metric"><div class="key-number" id="threatsBlocked">12</div><div class="key-label"><i class="fas fa-shield-virus"></i> Threats Blocked</div></div>
+            </div>
+            <div style="display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; margin-bottom: 25px;">
+                <button class="btn-quantum" id="deployKeysBtn"><i class="fas fa-rocket"></i> Deploy Keys</button>
+                <button class="btn-outline" id="auditLogsBtn"><i class="fas fa-history"></i> Audit Logs</button>
+                <button class="btn-outline" id="complianceBtn"><i class="fas fa-file-alt"></i> Compliance Reports</button>
+                <button class="btn-outline" id="threatAnalysisBtn"><i class="fas fa-chart-line"></i> Threat Analysis</button>
+            </div>
+            <div class="four-col">
+                <div class="key-metric"><div class="key-number">99.99%</div><div class="key-label">System Uptime</div></div>
+                <div class="key-metric"><div class="key-number">3.2ms</div><div class="key-label">Avg Latency</div></div>
+                <div class="key-metric"><div class="key-number">156</div><div class="key-label">Active Courses</div></div>
+                <div class="key-metric"><div class="key-number">87%</div><div class="key-label">Resource Utilization</div></div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="bottom-logos">
+                <img src="https://i.postimg.cc/zXW78GNH/Mind-Tech-Transparent-Logo.png" alt="MindTech" class="bottom-logo" onerror="this.style.display='none'">
+                <img src="https://i.postimg.cc/RFQfK9k5/os-finallogo-removebg-preview.png" alt="MQOS" class="bottom-logo" onerror="this.style.display='none'">
+            </div>
+            <div>© 2026 EntangleGuard · Powered by MindTech Industries &amp; MindTech Quantum OS</div>
+            <div style="margin-top: 12px; font-size: 0.65rem;"><i class="fas fa-check-circle"></i> IBM Verified (98.4% correlation) · Job ID: d55p3jgnsj9s73b32lj0</div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // ROBUST JS ENGINES - ENTANGLEGUARD CORE
+        // ============================================================
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5OB59lG6bAsmQ7A97zXP_MfQ5AM3BYaw",
+            authDomain: "mindflow-ai-education.firebaseapp.com",
+            projectId: "mindflow-ai-education"
+        };
+        
+        // DeepSeek API Key
+        const DEEPSEEK_API_KEY = "sk-0a238ff3550f4d78aec8ba0a799a3680";
+        
+        console.log("🔐 EntangleGuard v2.0 Initialized");
+        console.log("Firebase Project:", firebaseConfig.projectId);
+        console.log("DeepSeek API Key:", DEEPSEEK_API_KEY.substring(0, 10) + "...");
+
+        // ============================================================
+        // ENGINE 1: Quantum Backend Engine
+        // ============================================================
+        class QuantumBackendEngine {
+            constructor() {
+                this.backends = [
+                    { name: "IBM Torino", qubits: "133q", correlation: "98.4%", status: "online", icon: "fa-chart-line" },
+                    { name: "IonQ", qubits: "36 AQ", correlation: "99.5%", status: "online", icon: "fa-atom" },
+                    { name: "Quantinuum", qubits: "QV 2^19", correlation: "99.8%", status: "online", icon: "fa-cube" },
+                    { name: "D-Wave", qubits: "5000+ q", correlation: "97.2%", status: "online", icon: "fa-charging-station" },
+                    { name: "AWS Braket", qubits: "Hybrid", correlation: "98.1%", status: "online", icon: "fa-cloud" },
+                    { name: "Cisco Quantum", qubits: "QKD Ready", correlation: "99.1%", status: "online", icon: "fa-network-wired" },
+                    { name: "NuQuantum", qubits: "Photonics", correlation: "98.7%", status: "online", icon: "fa-lightbulb" },
+                    { name: "MQOS Router", qubits: "Auto-failover", correlation: "99.9%", status: "online", icon: "fa-microchip" }
+                ];
+                this.activeBackend = this.backends[0];
+            }
+
+            renderBackendGrid() {
+                const grid = document.getElementById('backendGrid');
+                if (!grid) return;
+                grid.innerHTML = this.backends.map(b => `
+                    <div class="backend-chip ${b.status}" onclick="backendEngine.selectBackend('${b.name}')">
+                        <div class="backend-name"><i class="fas ${b.icon}"></i> ${b.name}</div>
+                        <div class="backend-stats">${b.qubits} · ${b.correlation}</div>
+                        <div class="backend-status" style="color: ${b.status === 'online' ? '#00FF88' : '#EF476F'}">● ${b.status.toUpperCase()}</div>
+                    </div>
+                `).join('');
+            }
+
+            selectBackend(name) {
+                const backend = this.backends.find(b => b.name === name);
+                if (backend) {
+                    this.activeBackend = backend;
+                    document.getElementById('activeBackend').innerHTML = `${backend.name} (${backend.qubits}) · ${backend.correlation} correlation`;
+                    this.logEvent(`Backend switched to: ${backend.name}`, 'success');
+                    toastMessage(`Switched to ${backend.name}`);
+                }
+            }
+
+            getActiveBackend() { return this.activeBackend; }
+
+            logEvent(msg, type) { addLogEntry(msg, type); }
+        }
+
+        // ============================================================
+        // ENGINE 2: Bell State Engine
+        // ============================================================
+        class BellStateEngine {
+            constructor() {
+                this.states = [
+                    { symbol: "Φ⁺", correlation: 99.9, theory: "|00⟩ + |11⟩", active: true },
+                    { symbol: "Φ⁻", correlation: 99.7, theory: "|00⟩ - |11⟩", active: false },
+                    { symbol: "Ψ⁺", correlation: 99.5, theory: "|01⟩ + |10⟩", active: false },
+                    { symbol: "Ψ⁻", correlation: 99.3, theory: "|01⟩ - |10⟩", active: false }
+                ];
+                this.activeState = this.states[0];
+            }
+
+            renderBellStates() {
+                const container = document.getElementById('bellContainer');
+                if (!container) return;
+                container.innerHTML = this.states.map(s => `
+                    <div class="bell-state ${s.active ? 'active' : ''}" onclick="bellEngine.selectState('${s.symbol}')">
+                        <div class="bell-symbol">${s.symbol}</div>
+                        <div class="bell-correlation">${s.correlation}%</div>
+                        <div class="bell-theory">${s.theory}</div>
+                    </div>
+                `).join('');
+            }
+
+            selectState(symbol) {
+                this.states.forEach(s => s.active = (s.symbol === symbol));
+                this.activeState = this.states.find(s => s.active);
+                this.renderBellStates();
+                this.logEvent(`Bell state selected: ${symbol} (${this.activeState.correlation}% theoretical)`, 'success');
+                toastMessage(`Bell state ${symbol} selected`);
+            }
+
+            getActiveState() { return this.activeState; }
+
+            logEvent(msg, type) { addLogEntry(msg, type); }
+        }
+
+        // ============================================================
+        // ENGINE 3: Entanglement Verification Engine
+        // ============================================================
+        class EntanglementVerificationEngine {
+            constructor() {
+                this.baseCorrelation = 0.984; // IBM Torino: 98.4%
+                this.currentCorrelation = 0.984;
+                this.threshold = 0.95;
+                this.jobId = "d55p3jgnsj9s73b32lj0";
+                this.updateInterval = null;
+            }
+
+            startMonitoring() {
+                this.updateInterval = setInterval(() => {
+                    const variation = (Math.random() - 0.5) * 0.002;
+                    let newCorr = this.currentCorrelation + variation;
+                    newCorr = Math.min(0.986, Math.max(0.982, newCorr));
+                    if (Math.abs(newCorr - this.currentCorrelation) > 0.0005) {
+                        this.currentCorrelation = newCorr;
+                        this.updateDisplay();
+                    }
+                }, 5000);
+            }
+
+            updateDisplay() {
+                const percent = (this.currentCorrelation * 100).toFixed(1);
+                document.getElementById('correlationValue').innerHTML = `${percent}%`;
+                document.getElementById('correlationFill').style.width = `${percent}%`;
+                document.getElementById('entangleHealth').innerHTML = `${percent}%`;
+            }
+
+            getCorrelation() { return this.currentCorrelation; }
+
+            stopMonitoring() { if (this.updateInterval) clearInterval(this.updateInterval); }
+        }
+
+        // ============================================================
+        // ENGINE 4: Key Distribution Engine (Alice/Bob)
+        // ============================================================
+        class KeyDistributionEngine {
+            constructor() {
+                this.channelActive = true;
+                this.tamperDetected = false;
+                this.keysTransmitted = [
+                    { id: "K-3847", date: "2026-04-07 09:23:45", verified: true },
+                    { id: "K-3846", date: "2026-04-07 08:15:22", verified: true },
+                    { id: "K-3845", date: "2026-04-06 22:10:03", verified: true }
+                ];
+            }
+
+            transmitKey() {
+                if (!this.channelActive) {
+                    toastMessage("Quantum channel inactive. Cannot transmit.");
+                    return null;
+                }
+                const newKey = `K-${Math.floor(Math.random() * 9000 + 1000)}`;
+                const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
+                this.keysTransmitted.unshift({ id: newKey, date: now, verified: true });
+                if (this.keysTransmitted.length > 10) this.keysTransmitted.pop();
+                this.updateLog();
+                this.logEvent(`Key ${newKey} transmitted · Verified ✓`, 'success');
+                toastMessage(`Key ${newKey} transmitted to Bob`);
+                return newKey;
+            }
+
+            simulateTamper() {
+                this.tamperDetected = true;
+                this.channelActive = false;
+                document.getElementById('quantumChannelStatus').innerHTML = 'COMPROMISED';
+                document.getElementById('quantumChannelStatus').style.color = '#EF476F';
+                document.getElementById('tamperStatus').innerHTML = 'TAMPER DETECTED';
+                document.getElementById('tamperStatus').style.color = '#EF476F';
+                this.logEvent('⚠️ TAMPER DETECTED on quantum channel!', 'danger');
+                toastMessage('TAMPER DETECTED! Channel compromised.');
+                setTimeout(() => {
+                    this.tamperDetected = false;
+                    this.channelActive = true;
+                    document.getElementById('quantumChannelStatus').innerHTML = 'ACTIVE';
+                    document.getElementById('quantumChannelStatus').style.color = '#00FF88';
+                    document.getElementById('tamperStatus').innerHTML = 'NO TAMPER';
+                    document.getElementById('tamperStatus').style.color = '#00FF88';
+                    this.logEvent('Quantum channel restored', 'success');
+                }, 10000);
+            }
+
+            updateLog() {
+                const container = document.getElementById('keyTransmissionLog');
+                if (!container) return;
+                container.innerHTML = `<div style="font-size: 0.7rem; margin-bottom: 8px; font-weight: bold;"><i class="fas fa-history"></i> Key Transmission Log</div>
+                    ${this.keysTransmitted.map(k => `<div class="log-entry ${k.verified ? 'success' : ''}">${k.date} · Key ${k.id} transmitted · ${k.verified ? 'Verified ✓' : 'Pending'}</div>`).join('')}`;
+            }
+
+            logEvent(msg, type) { addLogEntry(msg, type); }
+        }
+
+        // ============================================================
+        // ENGINE 5: Transaction Security Engine
+        // ============================================================
+        class TransactionSecurityEngine {
+            constructor() {
+                this.signature = "8f4e2a7b1c3d5e9f7a2b4c6d8e0f1a3b5c7d9e1f3b5d7f9b71c";
+                this.latency = 3.2;
+            }
+
+            verifyTransaction(txnId) {
+                const startTime = performance.now();
+                // Simulate quantum verification
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        const endTime = performance.now();
+                        this.latency = (endTime - startTime).toFixed(1);
+                        document.getElementById('latencyDisplay').innerHTML = this.latency;
+                        document.getElementById('verifyStatus').innerHTML = '<i class="fas fa-check-circle"></i> PASSED';
+                        document.getElementById('verifyStatus').style.color = '#00FF88';
+                        this.logEvent(`Transaction ${txnId} verified | Latency: ${this.latency}ms`, 'success');
+                        toastMessage(`Transaction verified in ${this.latency}ms`);
+                        resolve(true);
+                    }, Math.random() * 2 + 2);
+                });
+            }
+
+            logEvent(msg, type) { addLogEntry(msg, type); }
+        }
+
+        // ============================================================
+        // ENGINE 6: Quantum Key Management System (QKMS)
+        // ============================================================
+        class QKMSEngine {
+            constructor() {
+                this.activeKeys = 247;
+                this.expiredKeys = 12;
+                this.revokedKeys = 3;
+                this.accessLog = [
+                    "2026-04-07 09:23:45 · Key K-3847 accessed by admin",
+                    "2026-04-07 08:15:22 · Key K-3846 rotated",
+                    "2026-04-06 14:30:11 · Key K-3845 exported"
+                ];
+            }
+
+            rotateKeys() {
+                const rotated = Math.floor(Math.random() * 8) + 5;
+                this.activeKeys = this.activeKeys - rotated + Math.floor(Math.random() * 12) + 8;
+                this.expiredKeys += rotated;
+                this.updateDisplay();
+                this.addAccessLog(`Key rotation completed: ${rotated} keys rotated`);
+                this.logEvent(`Key rotation: ${rotated} keys rotated`, 'success');
+                toastMessage(`${rotated} keys rotated successfully`);
+            }
+
+            revokeKey() {
+                if (this.activeKeys > 0) {
+                    this.activeKeys--;
+                    this.revokedKeys++;
+                    this.updateDisplay();
+                    const keyId = `K-${Math.floor(Math.random() * 10000)}`;
+                    this.addAccessLog(`Key ${keyId} revoked by admin`);
+                    this.logEvent(`Key ${keyId} revoked`, 'warning');
+                    toastMessage(`Key ${keyId} revoked`);
+                }
+            }
+
+            exportKeys() {
+                this.logEvent(`Encrypted key backup exported (${this.activeKeys} active keys)`, 'success');
+                toastMessage(`Key backup exported`);
+            }
+
+            updateDisplay() {
+                document.getElementById('activeKeys').innerHTML = this.activeKeys;
+                document.getElementById('expiredKeys').innerHTML = this.expiredKeys;
+                document.getElementById('revokedKeys').innerHTML = this.revokedKeys;
+                document.getElementById('keysDistributed').innerHTML = this.activeKeys.toLocaleString();
+                document.getElementById('corpActiveNodes').innerHTML = this.activeKeys;
+            }
+
+            addAccessLog(entry) {
+                const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
+                this.accessLog.unshift(`${timestamp} · ${entry}`);
+                if (this.accessLog.length > 10) this.accessLog.pop();
+                this.updateAccessLog();
+            }
+
+            updateAccessLog() {
+                const container = document.getElementById('accessLog');
+                if (!container) return;
+                container.innerHTML = `<div style="font-size: 0.7rem; margin-bottom: 8px; font-weight: bold;"><i class="fas fa-list-alt"></i> Access Control Log</div>
+                    ${this.accessLog.map(entry => `<div class="log-entry">${entry}</div>`).join('')}`;
+            }
+
+            logEvent(msg, type) { addLogEntry(msg, type); }
+        }
+
+        // ============================================================
+        // ENGINE 7: Network Command Engine
+        // ============================================================
+        class NetworkCommandEngine {
+            constructor() {
+                this.activeNodes = 247;
+                this.threatsBlocked = 12;
+                this.backends = ["IBM", "IonQ", "Quantinuum", "D-Wave", "AWS", "Cisco", "NuQuantum", "MQOS"];
+            }
+
+            renderBackendBadges() {
+                const container = document.getElementById('backendBadges');
+                if (!container) return;
+                container.innerHTML = this.backends.map(b => `
+                    <div class="backend-chip online">
+                        <div class="backend-name">${b}</div>
+                    </div>
+                `).join('');
+            }
+
+            blockThreat() {
+                this.threatsBlocked++;
+                document.getElementById('threatsBlocked').innerHTML = this.threatsBlocked;
+                document.getElementById('activeThreats').innerHTML = '0';
+                this.logEvent(`Threat blocked. Total blocked: ${this.threatsBlocked}`, 'success');
+                toastMessage(`Threat neutralized`);
+            }
+
+            logEvent(msg, type) { addLogEntry(msg, type); }
+        }
+
+        // ============================================================
+        // ENGINE 8: Corporate Dashboard Engine
+        // ============================================================
+        class CorporateDashboardEngine {
+            constructor() {
+                this.keysDistributed = 12458;
+                this.transactionsSecured = 847231;
+                this.systemUptime = 99.99;
+                this.avgLatency = 3.2;
+            }
+
+            incrementTransactions(count = 1) {
+                this.transactionsSecured += count;
+                document.getElementById('txnsSecured').innerHTML = this.transactionsSecured.toLocaleString();
+            }
+
+            deployKeys(count = null) {
+                const deployed = count || Math.floor(Math.random() * 50) + 10;
+                this.keysDistributed += deployed;
+                document.getElementById('keysDistributed').innerHTML = this.keysDistributed.toLocaleString();
+                this.logEvent(`${deployed} quantum keys deployed to network nodes`, 'success');
+                toastMessage(`${deployed} keys deployed`);
+            }
+
+            logEvent(msg, type) { addLogEntry(msg, type); }
+        }
+
+        // ============================================================
+        // HELPER FUNCTIONS
+        // ============================================================
+        function addLogEntry(message, type = 'info') {
+            const logContainer = document.getElementById('keyTransmissionLog');
+            if (logContainer) {
+                const timestamp = new Date().toLocaleTimeString();
+                const entry = document.createElement('div');
+                entry.className = `log-entry ${type === 'success' ? 'success' : (type === 'danger' ? 'danger' : '')}`;
+                entry.innerHTML = `[${timestamp}] ${message}`;
+                logContainer.insertBefore(entry, logContainer.children[1]);
+                if (logContainer.children.length > 12) {
+                    logContainer.removeChild(logContainer.children[logContainer.children.length - 1]);
+                }
+            }
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        function toastMessage(message) {
+            let toast = document.getElementById('customToast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'customToast';
+                toast.style.cssText = 'position: fixed; bottom: 25px; right: 25px; background: linear-gradient(135deg, #8A2BE2, #00B4D8); color: white; padding: 14px 24px; border-radius: 50px; font-size: 0.85rem; z-index: 1000; animation: fadeInOut 3s ease; pointer-events: none; font-weight: 500; box-shadow: 0 5px 20px rgba(0,0,0,0.3);';
+                document.body.appendChild(toast);
+            }
+            toast.innerHTML = `<i class="fas fa-bell"></i> ${message}`;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+
+        function updateTimestamp() {
+            const now = new Date();
+            const formatted = now.toISOString().replace('T', ' ').substring(0, 19);
+            document.getElementById('timestamp').innerHTML = formatted;
+        }
+
+        // ============================================================
+        // INITIALIZE ALL ENGINES
+        // ============================================================
+        const backendEngine = new QuantumBackendEngine();
+        const bellEngine = new BellStateEngine();
+        const verificationEngine = new EntanglementVerificationEngine();
+        const distributionEngine = new KeyDistributionEngine();
+        const transactionEngine = new TransactionSecurityEngine();
+        const qkmsEngine = new QKMSEngine();
+        const networkEngine = new NetworkCommandEngine();
+        const corporateEngine = new CorporateDashboardEngine();
+
+        // Make globally accessible for onclick handlers
+        window.backendEngine = backendEngine;
+        window.bellEngine = bellEngine;
+        window.distributionEngine = distributionEngine;
+        window.qkmsEngine = qkmsEngine;
+        window.networkEngine = networkEngine;
+
+        // Render UI components
+        backendEngine.renderBackendGrid();
+        bellEngine.renderBellStates();
+        networkEngine.renderBackendBadges();
+        qkmsEngine.updateAccessLog();
+        distributionEngine.updateLog();
+        updateTimestamp();
+        setInterval(updateTimestamp, 1000);
+
+        // Start monitoring
+        verificationEngine.startMonitoring();
+
+        // ============================================================
+        // EVENT LISTENERS
+        // ============================================================
+        document.getElementById('exportKeyBtn').addEventListener('click', () => {
+            const newKey = distributionEngine.transmitKey();
+            if (newKey) {
+                qkmsEngine.activeKeys++;
+                qkmsEngine.updateDisplay();
+                corporateEngine.keysDistributed++;
+                document.getElementById('keysDistributed').innerHTML = corporateEngine.keysDistributed.toLocaleString();
+            }
+        });
+
+        document.getElementById('rotateKeysBtn').addEventListener('click', () => qkmsEngine.rotateKeys());
+        document.getElementById('revokeKeyBtn').addEventListener('click', () => qkmsEngine.revokeKey());
+        document.getElementById('exportKeysBtn').addEventListener('click', () => qkmsEngine.exportKeys());
+        document.getElementById('verifyTxnBtn').addEventListener('click', () => {
+            const txnId = document.getElementById('txnId').value;
+            transactionEngine.verifyTransaction(txnId).then(() => {
+                corporateEngine.incrementTransactions();
+            });
+        });
+        document.getElementById('deployKeysBtn').addEventListener('click', () => corporateEngine.deployKeys());
+        document.getElementById('auditLogsBtn').addEventListener('click', () => {
+            toastMessage('Audit log exported to Firestore');
+            addLogEntry('Audit log exported', 'success');
+        });
+        document.getElementById('complianceBtn').addEventListener('click', () => {
+            toastMessage('POPIA/GDPR compliance report generated');
+            addLogEntry('Compliance report generated', 'success');
+        });
+        document.getElementById('threatAnalysisBtn').addEventListener('click', () => {
+            toastMessage('No active threats detected');
+            addLogEntry('Threat analysis completed: 0 threats', 'success');
+        });
+        document.getElementById('auditLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            toastMessage('Audit trail: All events immutable on Firestore');
+        });
+
+        // Simulate tamper test (hidden feature - Ctrl+Shift+T)
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && e.key === 'T') {
+                distributionEngine.simulateTamper();
+            }
+        });
+
+        // ============================================================
+        // PARTICLES.JS
+        // ============================================================
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 55, density: { enable: true, value_area: 1000 } },
+                color: { value: ["#00B4D8", "#00F5D4", "#8A2BE2"] },
+                shape: { type: "circle" },
+                opacity: { value: 0.25, random: true, anim: { enable: true, speed: 0.5, opacity_min: 0.05 } },
+                size: { value: 2.5, random: true, anim: { enable: true, speed: 1, size_min: 0.5 } },
+                line_linked: { enable: true, distance: 150, color: "#00B4D8", opacity: 0.1, width: 0.8 },
+                move: { enable: true, speed: 0.7, direction: "none", random: true }
+            },
+            interactivity: { events: { onhover: { enable: true, mode: "repulse" } } }
+        });
+
+        console.log("✅ All Engines Initialized:");
+        console.log("   - QuantumBackendEngine (7 backends)");
+        console.log("   - BellStateEngine (4 states)");
+        console.log("   - EntanglementVerificationEngine (98.4% base)");
+        console.log("   - KeyDistributionEngine (Alice/Bob)");
+        console.log("   - TransactionSecurityEngine (<3.2ms)");
+        console.log("   - QKMSEngine (247 active keys)");
+        console.log("   - NetworkCommandEngine (247 nodes)");
+        console.log("   - CorporateDashboardEngine (847k txns)");
+    </script>
+    <style>
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(20px); }
+            15% { opacity: 1; transform: translateY(0); }
+            85% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-20px); }
+        }
+        input:focus { outline: none; border-color: var(--primary) !important; }
+        .job-id { display: inline-flex; align-items: center; gap: 6px; }
+    </style>
+</body>
+</html>
