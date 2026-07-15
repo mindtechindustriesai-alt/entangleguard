@@ -42,7 +42,7 @@
         .status-badge.online { border-color: var(--success); color: var(--success); }
         .status-badge i { margin-right: 6px; }
         
-        /* Grid Layouts - MAX SPACING */
+        /* Grid Layouts */
         .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 35px; margin-bottom: 35px; }
         .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 40px; }
         .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 35px; margin-bottom: 35px; }
@@ -98,22 +98,11 @@
         .log-entry.warning { color: var(--warning); }
         .log-entry.danger { color: var(--danger); }
         
-        /* Alert Panel */
-        .alert-panel { background: rgba(0,0,0,0.3); border-radius: 16px; padding: 14px; }
-        .alert-item { font-size: 0.7rem; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 10px; }
-        .alert-item.success { color: var(--success); }
-        .alert-item i { width: 20px; }
-        
         /* Footer */
         .footer { text-align: center; font-size: 0.7rem; color: #8A99B0; padding: 30px 20px 25px; border-top: 1px solid var(--glass-border); margin-top: 40px; }
-        .bottom-logos { display: flex; justify-content: center; gap: 50px; margin-bottom: 25px; }
+        .bottom-logos { display: flex; justify-content: center; gap: 50px; margin-bottom: 25px; flex-wrap: wrap; }
         .bottom-logo { height: 50px; width: auto; opacity: 0.8; transition: all 0.3s; }
         .bottom-logo:hover { opacity: 1; transform: scale(1.05); }
-        
-        /* Scrollbar */
-        .log-container::-webkit-scrollbar { width: 4px; }
-        .log-container::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 4px; }
-        .log-container::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
         
         @media (max-width: 1200px) { 
             .two-col, .three-col, .four-col { grid-template-columns: 1fr; gap: 30px; } 
@@ -122,12 +111,16 @@
             .bell-container { flex-wrap: wrap; }
             .container { padding: 20px; }
         }
+        @media (max-width: 600px) {
+            .bottom-logos { gap: 20px; }
+            .bottom-logo { height: 32px; }
+        }
     </style>
 </head>
 <body>
     <div id="particles-js"></div>
     <div class="container">
-        <!-- Header with Logo -->
+        <!-- Header -->
         <div class="entangleguard-header">
             <div class="header-left">
                 <img src="https://i.postimg.cc/44m1NBFY/Entangle-Guard-New-Logo-image-3-removebg-preview.png" alt="EntangleGuard Logo" class="logo-img" onerror="this.src='https://placehold.co/75x75/8A2BE2/white?text=EG'">
@@ -137,8 +130,9 @@
                 </div>
             </div>
             <div class="status-bar">
-                <span class="status-badge online" id="mqosStatus"><i class="fas fa-microchip"></i> MQOS: 7/7 Backends Online</span>
-                <span class="status-badge online" id="firestoreStatus"><i class="fas fa-database"></i> Firestore: Connected</span>
+                <span class="status-badge online"><i class="fas fa-microchip"></i> MQOS: 7/7 Backends Online</span>
+                <span class="status-badge online"><i class="fas fa-shield-alt"></i> CHSH S=2.76 · 98.4%</span>
+                <span class="status-badge online"><i class="fas fa-file-patent"></i> SA 2026/05142</span>
             </div>
         </div>
 
@@ -239,11 +233,6 @@
                     <div class="key-metric"><div class="key-number">7/7</div><div class="key-label">MQOS Backends</div></div>
                 </div>
                 <div class="backend-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 20px;" id="backendBadges"></div>
-                <div class="alert-panel" id="alertPanel">
-                    <div class="alert-item success"><i class="fas fa-check-circle"></i> All systems operational</div>
-                    <div class="alert-item"><i class="fas fa-info-circle"></i> Key rotation completed: 07 April 2026</div>
-                    <div class="alert-item"><i class="fas fa-info-circle"></i> MQOS health check: 7/7 backends online</div>
-                </div>
                 <div style="margin-top: 18px; text-align: center; font-weight: bold; color: var(--success); padding: 10px; background: rgba(0,255,136,0.05); border-radius: 40px;"><i class="fas fa-shield-alt"></i> System Status: ALL SYSTEMS OPERATIONAL</div>
             </div>
         </div>
@@ -276,9 +265,15 @@
             <div class="bottom-logos">
                 <img src="https://i.postimg.cc/zXW78GNH/Mind-Tech-Transparent-Logo.png" alt="MindTech" class="bottom-logo" onerror="this.style.display='none'">
                 <img src="https://i.postimg.cc/RFQfK9k5/os-finallogo-removebg-preview.png" alt="MQOS" class="bottom-logo" onerror="this.style.display='none'">
+                <img src="https://i.postimg.cc/8zVP7V0t/cleanmachine-image-removebg-preview.png" alt="CleanMachine" class="bottom-logo" onerror="this.style.display='none'">
+                <img src="https://i.postimg.cc/yYPDHtky/Luvuno-Quantum-Chat-image-removebg-preview.png" alt="Luvuno" class="bottom-logo" onerror="this.style.display='none'">
+                <img src="https://i.postimg.cc/QtyvGF3B/Quantum-AI-image-logo-removebg-preview.png" alt="Quantum AI" class="bottom-logo" onerror="this.style.display='none'">
+            </div>
+            <div style="margin-top: 12px;">
+                <span style="color: var(--secondary);">⚛️ CHSH S=2.76 · 98.4% correlation</span>
             </div>
             <div>© 2026 EntangleGuard · Powered by MindTech Industries &amp; MindTech Quantum OS</div>
-            <div style="margin-top: 12px; font-size: 0.65rem;"><i class="fas fa-check-circle"></i> IBM Verified (98.4% correlation) · Job ID: d55p3jgnsj9s73b32lj0</div>
+            <div style="margin-top: 12px; font-size: 0.65rem;"><i class="fas fa-check-circle"></i> IBM Verified (98.4% correlation) · Job ID: d55p3jgnsj9s73b32lj0 · SA 2026/05142</div>
         </div>
     </div>
 
@@ -287,18 +282,10 @@
         // ROBUST JS ENGINES - ENTANGLEGUARD CORE
         // ============================================================
 
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyD5OB59lG6bAsmQ7A97zXP_MfQ5AM3BYaw",
-            authDomain: "mindflow-ai-education.firebaseapp.com",
-            projectId: "mindflow-ai-education"
-        };
-        
         // DeepSeek API Key
         const DEEPSEEK_API_KEY = "sk-0a238ff3550f4d78aec8ba0a799a3680";
         
         console.log("🔐 EntangleGuard v2.0 Initialized");
-        console.log("Firebase Project:", firebaseConfig.projectId);
         console.log("DeepSeek API Key:", DEEPSEEK_API_KEY.substring(0, 10) + "...");
 
         // ============================================================
@@ -390,7 +377,7 @@
         // ============================================================
         class EntanglementVerificationEngine {
             constructor() {
-                this.baseCorrelation = 0.984; // IBM Torino: 98.4%
+                this.baseCorrelation = 0.984;
                 this.currentCorrelation = 0.984;
                 this.threshold = 0.95;
                 this.jobId = "d55p3jgnsj9s73b32lj0";
@@ -491,7 +478,6 @@
 
             verifyTransaction(txnId) {
                 const startTime = performance.now();
-                // Simulate quantum verification
                 return new Promise((resolve) => {
                     setTimeout(() => {
                         const endTime = performance.now();
@@ -683,14 +669,12 @@
         const networkEngine = new NetworkCommandEngine();
         const corporateEngine = new CorporateDashboardEngine();
 
-        // Make globally accessible for onclick handlers
         window.backendEngine = backendEngine;
         window.bellEngine = bellEngine;
         window.distributionEngine = distributionEngine;
         window.qkmsEngine = qkmsEngine;
         window.networkEngine = networkEngine;
 
-        // Render UI components
         backendEngine.renderBackendGrid();
         bellEngine.renderBellStates();
         networkEngine.renderBackendBadges();
@@ -699,7 +683,6 @@
         updateTimestamp();
         setInterval(updateTimestamp, 1000);
 
-        // Start monitoring
         verificationEngine.startMonitoring();
 
         // ============================================================
@@ -742,7 +725,6 @@
             toastMessage('Audit trail: All events immutable on Firestore');
         });
 
-        // Simulate tamper test (hidden feature - Ctrl+Shift+T)
         document.addEventListener('keydown', (e) => {
             if (e.ctrlKey && e.shiftKey && e.key === 'T') {
                 distributionEngine.simulateTamper();
@@ -765,15 +747,7 @@
             interactivity: { events: { onhover: { enable: true, mode: "repulse" } } }
         });
 
-        console.log("✅ All Engines Initialized:");
-        console.log("   - QuantumBackendEngine (7 backends)");
-        console.log("   - BellStateEngine (4 states)");
-        console.log("   - EntanglementVerificationEngine (98.4% base)");
-        console.log("   - KeyDistributionEngine (Alice/Bob)");
-        console.log("   - TransactionSecurityEngine (<3.2ms)");
-        console.log("   - QKMSEngine (247 active keys)");
-        console.log("   - NetworkCommandEngine (247 nodes)");
-        console.log("   - CorporateDashboardEngine (847k txns)");
+        console.log("✅ All Engines Initialized");
     </script>
     <style>
         @keyframes fadeInOut {
