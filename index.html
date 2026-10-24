@@ -42,6 +42,8 @@
         .status-badge.online { border-color: var(--success); color: var(--success); }
         .status-badge.pending { border-color: var(--warning); color: var(--warning); }
         .status-badge i { margin-right: 6px; }
+        .retry-btn { background: transparent; border: 1px solid var(--warning); color: var(--warning); padding: 6px 14px; border-radius: 20px; font-size: 0.7rem; cursor: pointer; transition: all 0.2s; }
+        .retry-btn:hover { background: rgba(255, 209, 102, 0.15); }
         
         /* Grid Layouts */
         .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 35px; margin-bottom: 35px; }
@@ -133,6 +135,7 @@
             <div class="status-bar">
                 <span class="status-badge online" id="statusMqos"><i class="fas fa-microchip"></i> MQOS: 7/7 Backends Online</span>
                 <span class="status-badge pending" id="statusHandshake"><i class="fas fa-satellite-dish"></i> Handshake: Pending...</span>
+                <button class="retry-btn" id="retryHandshakeBtn"><i class="fas fa-sync-alt"></i> Retry Handshake</button>
                 <span class="status-badge online"><i class="fas fa-file-patent"></i> SA 2026/05142</span>
             </div>
         </div>
@@ -310,7 +313,7 @@
                     const res = await fetch(`${MQOS_CORE}/api/v1/verify/chsh`, {
                         method: 'GET',
                         headers: { 'Content-Type': 'application/json' },
-                        signal: AbortSignal.timeout(5000)
+                        signal: AbortSignal.timeout(15000) // Increased to 15 seconds for Render cold start
                     });
 
                     if (res.ok) {
@@ -349,6 +352,14 @@
 
         // Auto-initialize the SDK handshake
         EntangleGuard.init();
+
+        // Retry button logic
+        document.getElementById('retryHandshakeBtn').addEventListener('click', () => {
+            const statusBadge = document.getElementById('statusHandshake');
+            statusBadge.className = 'status-badge pending';
+            statusBadge.innerHTML = `<i class="fas fa-satellite-dish"></i> Handshake: Retrying...`;
+            EntangleGuard.init();
+        });
 
         // ============================================================
         // SIMULATION ENGINES (FOR DASHBOARD VISUALS)
