@@ -558,5 +558,69 @@
 
         console.log("✅ All Engines Initialized");
     </script>
+<script>
+// ============================================================
+// MINDTECH GLOBAL CONFIG — SINGLE SOURCE OF TRUTH
+// ============================================================
+const MINDTECH_CONFIG = {
+    MQOS_BASE_URL: 'https://mindtech-quantum-os-goa1.onrender.com',
+    MQOS_HISTORY_URL: 'https://mindtech-quantum-os-goa1.onrender.com/api/v1/verify/chsh/history',
+    MQOS_DOCS_URL: 'https://mindtech-quantum-os-goa1.onrender.com/docs',
+    LUVUNO_CHAT_URL: 'https://luvuno-quantum-chat-africa-os.onrender.com',
+    LUVUNO_PROXY_URL: 'https://luvuno-backend-proxy.onrender.com',
+    PELO_URL: 'https://pelo-app.onrender.com',
+    KHENSANI_URL: 'https://spontaneous-fairy-11ae26.netlify.app',
+    ENTANGLEGUARD_URL: 'https://entangleguard.onrender.com',
+    QUANTUM_NATURE_URL: 'https://quantum-nature-modules.onrender.com',
+    MOLECULEMIND_URL: 'https://moleculemind-backend.onrender.com',
+    MINDCELL_URL: 'https://mindcell-quantum.onrender.com',
+    PORTFOLIO_URL: 'https://mindtech-quantum-portfolio.onrender.com',
+    SYSTEMS_URL: 'https://mindtech-quantum-systems.onrender.com',
+    PATENT_NUMBER: 'SA 2026/05142',
+    PATENT_AGENT: 'ENSafrica',
+    CHSH_S: 2.76,
+    CORRELATION: '98.4%',
+    IBM_JOB_ID: 'd8uhvl4bp3hs738628cg',
+    IBM_BACKEND: 'ibm_kingston',
+    IBM_QUBITS: 156
+};
+</script>
+<script>
+// ============================================================
+// MINDTECH QUANTUM STATUS BADGE
+// ============================================================
+(function() {
+    const badgeId = 'mindtech-quantum-badge';
+    if (document.getElementById(badgeId)) return;
+    const badge = document.createElement('div');
+    badge.id = badgeId;
+    badge.style.cssText = 'position:fixed;bottom:20px;right:20px;background:rgba(5,8,15,0.95);border:1px solid #00B4D8;border-radius:60px;padding:10px 20px;font-family:monospace;font-size:11px;color:#00F5D4;z-index:9999;backdrop-filter:blur(12px);box-shadow:0 0 30px rgba(0,180,216,0.2);cursor:pointer;transition:all 0.3s;';
+    badge.innerHTML = '<span id="quantum-badge-text">⚛️ Verifying...</span>';
+    document.body.appendChild(badge);
+    const text = document.getElementById('quantum-badge-text');
+    (async function() {
+        try {
+            const res = await fetch(MINDTECH_CONFIG.MQOS_HISTORY_URL);
+            const data = await res.json();
+            if (data.jobs && data.jobs.length > 0) {
+                const job = data.jobs[0];
+                text.innerHTML = '⚛️ HW VERIFIED · S=' + job.S + ' · ' + job.correlation + '% · ' + job.backend;
+                badge.style.borderColor = '#00FF88';
+            } else {
+                const rootRes = await fetch(MINDTECH_CONFIG.MQOS_BASE_URL + '/');
+                const root = await rootRes.json();
+                text.innerHTML = '⚛️ Simulator · S=' + root.chsh_s;
+                badge.style.borderColor = '#FFD166';
+            }
+        } catch (e) {
+            text.innerHTML = '⚛️ Quantum backend offline';
+            badge.style.borderColor = '#EF476F';
+        }
+    })();
+    badge.onclick = function() {
+        window.open(MINDTECH_CONFIG.MQOS_DOCS_URL, '_blank');
+    };
+})();
+</script>
 </body>
 </html>
